@@ -1,0 +1,27 @@
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://admin:password@localhost:5432/postgres"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+model User {
+  id    String @id @default(uuid()) @db.Uuid
+  email String @unique
+
+  sourceRequests FriendRequest[] @relation("sourceUser")
+  targetRequests FriendRequest[] @relation("targetUser")
+}
+
+model FriendRequest {
+  sourceId String @db.Uuid
+  targetId String @db.Uuid
+
+  sourceUser User @relation("sourceUser", fields: [sourceId], references: [id])
+  targetUser User @relation("targetUser", fields: [targetId], references: [id])
+
+  @@id([sourceId, targetId])
+}
